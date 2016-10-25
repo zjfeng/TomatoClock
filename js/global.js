@@ -3,21 +3,26 @@ window.onload = function () {
 
 	/* 参数设置(默认) */
 	windowOnTop = true;
-	finishAutoRest = true;
-	clockTime = 3;
+	finishAutoRest = false;
+	clockTime = 25;
 	clockSRestTime = 5;
 	clockLRestTime = 15;
 	lRestInterval = 4;
 	soundRemind = true;
-	tick = true;
-	soundMission = null;
-	soundRest = null;
-	soundMissionDef = null;
-	soundRestDef = null;
-	autoRest = true;
+	tick = false;
+	soundTick = "../番茄时钟/audio/tick.mp3";
+	soundMission = "../番茄时钟/audio/work.mp3";
+	soundMissionDef = soundMission;
+	soundRest = "../番茄时钟/audio/rest.mp3";
+	soundRestDef = soundRest;
+	position = null;
+	miniBlack = false;
+	desktopRemind = true;
+	manualOperation = false;
 	/* 参数设置结束 */
 
 
+	/* 导航栏点击事件 */
 	var oNav = document.getElementById("nav");
  	var oNavAs = oNav.getElementsByTagName("a");
  	var oPanle = document.getElementById("panle");
@@ -38,8 +43,10 @@ window.onload = function () {
  			}
  		}	
  	}
+ 	/* 导航栏点击事件结束 */
 
  	
+ 	/* 设置界面设置菜单点击事件 */
  	var oSet = document.getElementById("set");
  	var oMenuBtns = oSet.getElementsByClassName("button");
  	var oMenuSet = document.getElementById("menu-set");
@@ -60,33 +67,224 @@ window.onload = function () {
  			}
  		}
  	}
+ 	/* 设置界面设置菜单点击事件 */
 
- 	
+
+ 	/* 设置界面radio对象 */
+ 	function Radio(index, obj) {
+ 		this.index = index;
+ 		this.obj = obj;
+ 		this.obj.offsetLeft;
+ 		this.obj.style.left;
+ 	}
+ 	Radio.prototype = {
+		constructor : Radio,
+		Console : function () {
+		},
+		Initialize : function () {
+			switch(this.index) {
+				case 0 :
+					if (windowOnTop) {
+						radioItem[this.index].obj.style.left = 0 + "px";
+					} else {
+						radioItem[this.index].obj.style.left = -50 + "px";
+					}
+					break;
+				case 1 :
+					if (finishAutoRest) {
+						radioItem[this.index].obj.style.left = 0 + "px";
+					} else {
+						radioItem[this.index].obj.style.left = -50 + "px";
+					}
+					break;
+				case 2 : 
+					if (soundRemind) {
+						radioItem[this.index].obj.style.left = 0 + "px";
+					} else {
+						radioItem[this.index].obj.style.left = -50 + "px";
+					}
+					break;
+				case 3 : 
+					if (tick) {
+						radioItem[this.index].obj.style.left = 0 + "px";
+					} else {
+						radioItem[this.index].obj.style.left = -50 + "px";
+					}
+					break;
+				case 4 : 
+					if (miniBlack) {
+						radioItem[this.index].obj.style.left = 0 + "px";
+					} else {
+						radioItem[this.index].obj.style.left = -50 + "px";
+					}
+					break;
+				case 5 : 
+					if (desktopRemind) {
+						radioItem[this.index].obj.style.left = 0 + "px";
+					} else {
+						radioItem[this.index].obj.style.left = -50 + "px";
+					}
+					break;
+				case 6 : 
+					if (manualOperation) {
+						radioItem[this.index].obj.style.left = 0 + "px";
+					} else {
+						radioItem[this.index].obj.style.left = -50 + "px";
+					}
+					break;
+			}
+		},
+		Set : function () {
+			switch(this.index) {
+				case 0 :
+					if (this.obj.offsetLeft >= 0) {
+						windowOnTop = false;
+					} else {
+						windowOnTop = true;
+					}
+					break;
+				case 1 :
+					if (this.obj.offsetLeft >= 0) {
+						finishAutoRest = false;
+					} else {
+						finishAutoRest = true;
+					}
+					break;
+				case 2 :
+					if (this.obj.offsetLeft >= 0) {
+						soundRemind = false;
+					} else {
+						soundRemind = true;
+					}
+					break;
+				case 3 :
+					if (this.obj.offsetLeft >= 0) {
+						tick = false;
+					} else {
+						tick = true;
+					}
+					break;
+				case 4 :
+					if (this.obj.offsetLeft >= 0) {
+						miniBlack = false;
+					} else {
+						miniBlack = true;
+					}
+					break;
+				case 5 :
+					if (this.obj.offsetLeft >= 0) {
+						desktopRemind = false;
+					} else {
+						desktopRemind = true;
+					}
+					break;
+				case 6 :
+					if (this.obj.offsetLeft >= 0) {
+						manualOperation = false;
+					} else {
+						manualOperation = true;
+					}
+					break;
+			}
+		}
+	}
+	/* 设置界面radio对象 */
+
+
+	/* 设置界面radio点击事件 */
  	var oRadios = oPanle.getElementsByClassName("radio");
  	var oRadiosUls = oPanle.getElementsByClassName("radio-ul");
+	var radioItem = new Array();
+	for (var i = 0; i < oRadiosUls.length; i++) {
+		radioItem.push(new Radio(i, oRadiosUls[i]));
+		radioItem[i].Initialize();
+	}
  	for (var i = 0; i < oRadios.length; i++) {
  		(function (index) {
  			oRadios[index].index = index;
  			oRadios[index].onclick = function () {
+ 				radioItem[index].Console();
  				if (oRadiosUls[this.index].offsetLeft >= 0) {
  					startMove(oRadiosUls[this.index], {left : -50});
  				} else {
  					startMove(oRadiosUls[this.index], {left : 0});
  				}
+ 				radioItem[index].Set();
+ 			}
+ 		})(i)
+ 	}
+ 	/* 设置界面radio点击事件 */
+
+
+ 	/* 设置界面input */
+ 	var oSound = document.getElementById("sound");
+ 	var oUlSet = oSound.getElementsByTagName("ul")[1];
+ 	var oFileName = new Array();
+ 	var oFile = new Array();
+ 	var oDefault = new Array();
+ 	for (var i = 0; i < 2; i++) {
+ 		oFileName.push(oUlSet.getElementsByClassName("filename")[i]);
+ 		oFile.push(oUlSet.getElementsByClassName("file")[i]);
+ 		oDefault.push(oUlSet.getElementsByClassName("button-default")[i]);
+ 	}
+ 	
+ 	for (var i = 0; i < oFile.length; i++) {
+ 		(function (index) {
+ 			oFile[index].onchange = function () {
+ 				oFileName[index].innerHTML = oFile[index].value;
+ 				if (index == 0) {
+ 					soundMission = oFile[index].value;
+ 				} else {
+ 					soundRest = oFile[index].value;
+ 				}
+ 			}
+ 			oDefault[index].onclick = function () {
+ 				if (index == 0) {
+ 					oFileName[index].innerHTML = soundMissionDef.slice(8);
+ 					oFile[index].value = "";
+ 					soundMission = soundMissionDef;
+ 				} else {
+ 					oFileName[index].innerHTML = soundRestDef.slice(8);
+ 					oFile[index].value = "";
+ 					soundRest = soundRestDef;
+ 				}
  			}
  		})(i)
  	}
 
-
- 	var oMain = oPanles[0];
- 	var oBtn = oMain.getElementsByTagName("div")[0];
- 	oBtn.onclick = function () {
- 		if (oAddMission.className != "") {
- 			oAddMission.className = "";
+ 	var oBase = document.getElementById("base");
+ 	var oBaseUl = oBase.getElementsByTagName("ul")[1];
+ 	var oBaseLiInput = new Array();
+ 	for (var i = 0; i < oBaseUl.childNodes.length; i++) {
+ 		if (i >= 5 && oBaseUl.childNodes[i].nodeType == 1) {
+ 			oBaseLiInput.push(oBaseUl.childNodes[i].getElementsByTagName("input")[0]);
+ 		} else {
+ 			continue;
  		}
  	}
+ 	for (var i = 0; i < oBaseLiInput.length; i++) {
+ 		(function (index) {
+ 			oBaseLiInput[index].onchange = function () {
+ 				switch(index) {
+ 					case 0 :
+ 						clockTime = oBaseLiInput[index].value;
+ 						break;
+ 					case 1 :
+ 						clockSRestTime = oBaseLiInput[index].value;
+ 						break;
+ 					case 2 :
+ 						clockLRestTime = oBaseLiInput[index].value;
+ 						break;
+ 					case 3 :
+ 						lRestInterval = oBaseLiInput[index].value;
+ 				}
+ 			}
+ 		})(i)
+ 	}
+ 	/* 设置界面input */
 
 
+ 	/* 新增任务界面点击事件 */
  	var oAddMission = document.getElementById("addMission");
  	var oAddMissionNavClose = document.getElementById("addMission-nav-close");
  	var oCount = document.getElementsByTagName("strong")[0];
@@ -129,26 +327,52 @@ window.onload = function () {
    			}
    		}
  	}
+ 	/* 新增任务界面点击事件 */
 
 
- 	function Sleep(d){
- 	  for(var t = Date.now();Date.now() - t <= d;);
+ 	/* 任务界面添加任务按钮的点击事件 */
+ 	var oMain = oPanles[0];
+ 	var oBtn = oMain.getElementsByTagName("div")[0];
+ 	oBtn.onclick = function () {
+ 		if (oAddMission.className != "") {
+ 			oAddMission.className = "";
+ 		}
+ 		var liTotalTime = document.getElementById("li-totalTime");
+ 		var liMissionTime = document.getElementById("li-missionTime");
+ 		var liRestTime = document.getElementById("li-restTime");
+ 		var t = parseInt(clockTime) + parseInt(clockSRestTime);
+ 		liTotalTime.innerHTML = t + "分钟";
+ 		liMissionTime.innerHTML = clockTime + "分钟";
+ 		liRestTime.innerHTML = clockSRestTime + "分钟";
  	}
+ 	/* 任务界面添加任务按钮的点击事件 */
 
 
+ 	/* js睡眠 */
+ 	function Sleep(time){
+ 	  for(var t = Date.now();Date.now() - t <= time;);
+ 	}
+ 	/* js睡眠 */
+
+
+ 	/* 播放提示音 */
  	au = document.createElement("audio");
  	au.preload="auto";
  	function PlaySound(src) {
  		au.src = src;
  		au.play();
  	}
- 	
+ 	/* 播放提示音 */
 
+
+ 	/* mission对象 */
  	function Mission(index, missionName, workTime, restTime, count) {
 		this.index = index;
 		this.missionName = missionName;
 		this.workTime = workTime;
 		this.restTime = restTime;
+		this.workTime0 = workTime;
+		this.restTime0 = restTime;
 		this.count = count;
 		this.beginTime = new Date('2016/11/11 00:00:00');
 		this.endTime = new Date('2016/11/11 00:00:00');
@@ -165,19 +389,15 @@ window.onload = function () {
 		this.oSpan5;
 		working = false;
 		SetTime = function (obj) {
-			// PlaySound("../番茄时钟/audio/tick.mp3");
-			// console.log(1);
 	 		if (obj.isWorking) {
-				// console.log(2);
 				obj.workLeftTime--;
 				if (obj.workLeftTime < 0) {
-		 			PlaySound("../番茄时钟/audio/work.mp3");
-					// console.log(3);
+		 			if (soundRemind) {
+		 				PlaySound(soundMission);
+		 			}
 			 		clearTimeout(timekeeper);
 		 			obj.finishCount++;
-		 			// console.log(obj.oSpan1);
 		 			obj.oSpan1.innerHTML = obj.finishCount + "/" + obj.count;
-		 			// console.log(obj.oSpan1.innerHTML);
 		 			obj.restLeftTime = obj.restTime;
 		 			obj.isWorking = false;
 		 			obj.oSpan2.style.display = "none";
@@ -185,39 +405,42 @@ window.onload = function () {
 		 			obj.oSpan4.style.display = "inline-block";
 	 			}
 	 		} else {
-				// console.log(4);
+	 			console.log(1);
 				obj.restLeftTime--;
 		 		if (obj.restLeftTime < 0) {
-		 			PlaySound("../番茄时钟/audio/rest.mp3");
-		 			// console.log(5);
+		 			console.log(2);
+		 			if (soundRemind) {
+		 				PlaySound(soundRest);
+		 			}
 			 		if (obj.finishCount == obj.count) {
+			 			console.log(3);
 			 			obj.oSpan2.style.display = "none";
 			 			obj.oSpan3.style.display = "none";
 			 			obj.oSpan4.style.display = "none";
 			 			obj.oSpan5.style.display = "inline-block";
 			 			oH1.innerHTML = "番茄计时器";
-			 			working = false;
+			 			working = false;  //工作状态
 			 			return;
 			 		} else {
+			 			console.log(4);
 				 		clearTimeout(timekeeper);
 				 		obj.workLeftTime = obj.workTime;
-				 		obj.isWorking = true;
+				 		obj.isWorking = true;  //任务工作中
 				 		obj.oSpan2.style.display = "inline-block";
 			 			obj.oSpan3.style.display = "inline-block";
 			 			obj.oSpan4.style.display = "none";
+			 			this.oSpan2.getElementsByTagName("i")[0].innerHTML = "&#xe602;";  //完成按钮
+			 			this.oSpan2.nextSibling.getElementsByTagName("i")[0].innerHTML = "&#xe62e;";  //停止按钮
+			 			this.oSpan2.nextSibling.className = "span3";
 			 		}
 		 		}
 	 		}
-			// console.log(6);
 	 		obj.ShowTime();
 	 		timekeeper = setTimeout(function () {
 		 		SetTime(obj);
 		 	}, 1000);
 		 	console.count();
 	 	}
-	 	// var timekeeper = setInterval(function () {
-	 	// 	SetTime(obj);
-	 	// }, 1000);
 	}
 
 	Mission.prototype = {
@@ -261,8 +484,6 @@ window.onload = function () {
 			var oStrong = document.createElement("strong");
 			var oSpan2A = document.createElement("a");
 			var oSpan3A = document.createElement("a");
-			// var oSpan4A = document.createElement("a");
-			// var oSpan5A = document.createElement("a");
 			var oSpan2I = document.createElement("i");
 			var oSpan3I = document.createElement("i");
 			var oSpan4I = document.createElement("i");
@@ -288,12 +509,8 @@ window.onload = function () {
 			oSpan5.className = "span5";
 			oSpan2A.appendChild(oSpan2I);
 			oSpan3A.appendChild(oSpan3I);
-			// oSpan4A.appendChild(oSpan4I);
-			// oSpan5A.appendChild(oSpan5I);
 			oSpan2.appendChild(oSpan2A);
 			oSpan3.appendChild(oSpan3A);
-			// oSpan4.appendChild(oSpan4A);
-			// oSpan5.appendChild(oSpan5A);
 			oSpan4.appendChild(oSpan4I);
 			oSpan5.appendChild(oSpan5I);
 			oDiv.appendChild(oSpan1);
@@ -332,31 +549,71 @@ window.onload = function () {
 		 		}
 		 		oH1.innerHTML = missionRestTimeM + "  :  " + missionRestTimeS;
 		 	}
+		 	if (tick) {
+		 		PlaySound(soundTick);
+		 	}
 		},
 		EventStart : function () {
 			var that = this;
 			this.oSpan2.onclick = function () {
-				if (!working) {
-					working = true;
-					var oParent = this.parentNode.parentNode.parentNode;
-					console.log(this);
-					var innerText = "\&#x" + escape(this.getElementsByTagName("i")[0].innerHTML).slice(2).toLowerCase() + ";";
+				var oParent = this.parentNode.parentNode.parentNode;
+				var innerText = "\&#x" + escape(this.getElementsByTagName("i")[0].innerHTML).slice(2).toLowerCase() + ";";
+				if (!working) {  //如果不是在工作状态，即按钮显示为开始按钮
 					if (innerText == "&#xe609;") {  //开始按钮
 						this.getElementsByTagName("i")[0].innerHTML = "&#xe602;";  //完成按钮
-						// var timekeeper = setInterval(function () {
-						// 	SetTime(obj);
-						// }, 1000);
 						SetTime(that);
-						// Sleep(1000);
-					} else {  //完成按钮
-						oDivMissionList.removeChild(oParent);
-						if (oDivMissionList.childNodes.length == 0) {
-							oH1.innerHTML = "番茄计时器";
-						}
 					}
 					this.nextSibling.getElementsByTagName("i")[0].innerHTML = "&#xe62e;";  //停止按钮
 					this.nextSibling.className = "span3";
-					// console.log(this.nextSibling);
+					working = true;  //设置为工作状态
+				} else {  //如果正在工作状态，即按钮显示为完成按钮
+					console.log("tick is onclick!!!");
+					clearTimeout(timekeeper);
+					if (that.finishCount < that.count) {  //如果未完成指定任务次数
+						console.log("finishCount : " + that.finishCount);
+						console.log("count : " + that.count);
+						this.getElementsByTagName("i")[0].innerHTML = "&#xe609;";  //开始按钮
+						this.nextSibling.getElementsByTagName("i")[0].innerHTML = "&#xe636;";  //删除按钮
+						this.nextSibling.className = "";
+						that.workLeftTime = that.workTime;
+						that.restLeftTime = that.restTime;
+						if (finishAutoRest) {
+							that.workLeftTime = -1;
+							SetTime(that);
+						} else {
+							that.finishCount ++;
+							that.oSpan1.innerHTML = that.finishCount + "/" + that.count;
+							if (that.finishCount == that.count) {
+								if (soundRemind) {
+									PlaySound(soundRest);
+								}
+								that.oSpan2.style.display = "none";
+								that.oSpan3.style.display = "none";
+								that.oSpan4.style.display = "none";
+								that.oSpan5.style.display = "inline-block";
+								oH1.innerHTML = "番茄计时器";
+							} else {
+								that.ShowTime();
+							}
+						}
+					} else {  //完成指定次数任务
+						console.log("完成指定次数任务！！");
+						that.finishCount ++;
+						that.oSpan1.innerHTML = that.finishCount + "/" + that.count;
+						if (finishAutoRest) {
+						console.log("打开自动休息！！");
+							that.workLeftTime = -1;
+							SetTime(that);
+						} else {
+							console.log("没有打开自动休息！！");
+							that.oSpan2.style.display = "none";
+							that.oSpan3.style.display = "none";
+							that.oSpan4.style.display = "none";
+							that.oSpan5.style.display = "inline-block";
+							oH1.innerHTML = "番茄计时器";
+						}
+					}
+					working = false;
 				}
 			}
 		},
@@ -378,20 +635,17 @@ window.onload = function () {
 					if (oDivMissionList.childNodes.length == 0) {
 						oH1.innerHTML = "番茄计时器";
 					}
+					clearTimeout(timekeeper);
+					that.workLeftTime = that.workTime;
+					that.restLeftTime = that.restTime;
 				}
 			}
 		},
-		// Timekeeping : function () {
-		// 	if (isWorking) {
-		// 		this.workLeftTime--;
-		// 		this.ShowTime();
-		// 	} else {
-		// 		this.restLeftTime--;
-		// 		this.ShowTime();
-		// 	}
-		// }
 	}
+	/* mission对象 */
 
+
+	/* 新增任务界面确定按钮点击事件 */
  	var missionIndex = 0;
  	var missionItem = new Array();
  	oAddMissionFootButtonConfirm.onclick = function () {
@@ -400,9 +654,6 @@ window.onload = function () {
 		} else {
 			oMissionNameValue = oMissionName.value;
 		}
-		// console.log(oMissionName.placeholder);
-		// console.log(oMissionName.value);
-		// console.log(oMissionNameValue);
 		oCountValue = parseInt(oCount.innerHTML);
  		missionItem.push(new Mission(missionIndex, oMissionNameValue, clockTime, clockSRestTime, oCountValue));
  		if (!document.getElementById("missionList")) {
@@ -411,184 +662,14 @@ window.onload = function () {
 			oMain.appendChild(oDivMissionList);
  		}
  		missionItem[missionIndex].CreateMissionList();
- 		// missionItem[missionIndex].SetWorkTime();
- 		// missionItem[missionIndex].SetRestTime();
  		missionItem[missionIndex].ShowTime();
  		missionItem[missionIndex].EventStart();
  		missionItem[missionIndex].EventStop();
 
- 		console.log("index: " + missionItem[missionIndex].index);
-	 	console.log("missionName: " + missionItem[missionIndex].missionName);
-	 	console.log("workTime: " + missionItem[missionIndex].workTime);
-	 	console.log("restTime: " + missionItem[missionIndex].restTime);
-	 	console.log("count: " + missionItem[missionIndex].count);
-	 	console.log("workLeftTime: " + missionItem[missionIndex].workLeftTime);
-	 	console.log("restLeftTime: " + missionItem[missionIndex].restLeftTime);
-	 	console.log(missionItem[missionIndex]);
 
-	 	// var SetTime = function (obj) {
-	 	// 	if (obj.isWorking) {
-	 	// 		obj.workLeftTime--;
-	 	// 	} else {
-	 	// 		obj.restLeftTime--;
-	 	// 	}
-	 	// 	obj.ShowTime();
-	 	// }
-	 	// var obj = missionItem[missionIndex];
-	 	// var timekeeper = setInterval(function () {
-	 	// 	SetTime(obj);
-	 	// }, 1000);
-		// AddMission();
-		// if (missionName == "") {
-		// 	missionName = oMissionName.placeholder;
-		// }
- 	// 	missionItem.push(new Mission(missionIndex, missionName, clockTime, clockSRestTime, oMissionCount));
- 	// 	missionItem[missionIndex].SetWorkTime();
- 	// 	missionItem[missionIndex].SetRestTime();
- 	// 	console.log("index: " + missionItem[missionIndex].index);
- 	// 	console.log("missionName: " + missionItem[missionIndex].missionName);
- 	// 	console.log("workTime: " + missionItem[missionIndex].workTime);
- 	// 	console.log("restTime: " + missionItem[missionIndex].restTime);
- 	// 	console.log("count: " + missionItem[missionIndex].count);
- 	// 	console.log("workLeftTime: " + missionItem[missionIndex].workLeftTime);
- 	// 	console.log("restLeftTime: " + missionItem[missionIndex].restLeftTime);
-		// oAddMission.className = "noClick";
-		// Span2ClickEvent();
-		// Span3ClickEvent();
-		// ShowTime();
 		missionIndex ++;
  	}
-
- // 	function ShowTime() {
- // 		oH1 = document.getElementsByTagName("h1")[0];
-	// 	missionTimeM = parseInt(missionItem[0].workLeftTime / 60);
-	// 	missionTimeS = parseInt(missionItem[0].workLeftTime % 60);
- // 		if (missionTimeM < 10) {
- // 			missionTimeM = "0" + missionTimeM;
- // 		}
- // 		if (missionTimeS < 10) {
- // 			missionTimeS = "0" + missionTimeS;
- // 		}
- // 		oH1.innerHTML = missionTimeM + "  :  " + missionTimeS;
- // 	}
-
-
- // 	function ShowWorkTime() {
-	// 	missionTimeM = parseInt(missionItem[0].workLeftTime / 60);
-	// 	missionTimeS = parseInt(missionItem[0].workLeftTime % 60);
- // 		if (missionTimeM < 10) {
- // 			missionTimeM = "0" + missionTimeM;
- // 		}
- // 		if (missionTimeS < 10) {
- // 			missionTimeS = "0" + missionTimeS;
- // 		}
- // 		oH1.innerHTML = missionTimeM + "  :  " + missionTimeS;
- // 		if (missionItem[0].workLeftTime == 0) {
- // 			clearTimeout(timeout);
- // 			finishCount++;
- // 			oSpan1.innerHTML = finishCount + "/" + oMissionCount;
- // 			return;
- // 		}
- // 		missionItem[0].workLeftTime --;
-	// 	timeout = setTimeout(ShowWorkTime, 1000);
- // 	}
-
-
- // 	function Span3ClickEvent() {
- // 		oSpan3.onclick = function () {
-	// 		var oParent = this.parentNode.parentNode.parentNode;
-	// 		var innerText = "\&#x" + escape(this.getElementsByTagName("i")[0].innerHTML).slice(2).toLowerCase() + ";";
-	// 		if (innerText == "&#xe62e;") {  //停止按钮
-	// 			this.previousSibling.getElementsByTagName("i")[0].innerHTML = "&#xe609;";
-	// 			this.getElementsByTagName("i")[0].innerHTML = "&#xe636;";  //垃圾桶
-	// 			clearTimeout(timeout);
-	// 			ShowTime();
-	// 		} else {
-	// 			oDivMissionList.removeChild(oParent);
-	// 			if (oDivMissionList.childNodes.length == 0) {
-	// 				oH1.innerHTML = "番茄计时器";
-	// 			}
-	// 		}
-	// 	}
- // 	}
-
-
- // 	function Span2ClickEvent() {
- // 		oSpan2.onclick = function () {
-	// 		var oParent = this.parentNode.parentNode.parentNode;
-	// 		var innerText = "\&#x" + escape(this.getElementsByTagName("i")[0].innerHTML).slice(2).toLowerCase() + ";";
-	// 		if (innerText == "&#xe609;") {  //开始按钮
-	// 			this.getElementsByTagName("i")[0].innerHTML = "&#xe602;";
-	// 			ShowWorkTime();
-	// 		} else {
-	// 			oDivMissionList.removeChild(oParent);
-	// 			clearTimeout(timeout);
-	// 			ShowTime();
-	// 			if (oDivMissionList.childNodes.length == 0) {
-	// 				oH1.innerHTML = "番茄计时器";
-	// 			}
-	// 		}
-	// 		this.nextSibling.getElementsByTagName("i")[0].innerHTML = "&#xe62e;";  //停止按钮
-	// 	}
- // 	}
-
-
- // 	function AddMission() {
- // 		if (!document.getElementById("missionList")) {
-	//  		oDivMissionList = document.createElement("div");
-	// 		oDivMissionList.id = "missionList";
- // 		}
-	// 	var oUl = document.createElement("ul");
-	// 	var oLi = document.createElement("li");
-	// 	oSpan1 = document.createElement("span");
-	// 	oSpan2 = document.createElement("span");
-	// 	oSpan3 = document.createElement("span");
-	// 	oSpan4 = document.createElement("span");
-	// 	var oStrong = document.createElement("strong");
-	// 	var oSpan2A = document.createElement("a");
-	// 	var oSpan3A = document.createElement("a");
-	// 	var oSpan4A = document.createElement("a");
-	// 	var oSpan2I = document.createElement("i");
-	// 	var oSpan3I = document.createElement("i");
-	// 	var oSpan4I = document.createElement("i");
-	// 	oMissionName = document.getElementById("missionName");
-	// 	missionName = oMissionName.value;
-	// 	oMissionCount = parseInt(oCount.innerHTML);
-	// 	finishCount = 0;
-	// 	oDiv = document.createElement("div");
-	// 	oSpan1.innerHTML = finishCount + "/" + oMissionCount;
-	// 	if (oMissionName.value) {
-	// 		oStrong.innerHTML = oMissionName.value;
-	// 	} else {
-	// 		oStrong.innerHTML = oMissionName.placeholder;
-	// 	}
-	// 	oSpan2I.className = "iconfont";
-	// 	oSpan3I.className = "iconfont";
-	// 	oSpan4I.className = "iconfont";
-	// 	oSpan2I.innerHTML = "&#xe609;";
-	// 	oSpan3I.innerHTML = "&#xe636;";
-	// 	oSpan4I.innerHTML = "&#xe64b;";
-	// 	oSpan1.className = "span1";
-	// 	oSpan2.className = "span2";
-	// 	oSpan3.className = "span3";
-	// 	oSpan4.className = "span4";
-	// 	oSpan2A.appendChild(oSpan2I);
-	// 	oSpan3A.appendChild(oSpan3I);
-	// 	oSpan4A.appendChild(oSpan4I);
-	// 	oSpan2.appendChild(oSpan2A);
-	// 	oSpan3.appendChild(oSpan3A);
-	// 	oSpan4.appendChild(oSpan4A);
-	// 	oDiv.appendChild(oSpan1);
-	// 	oDiv.appendChild(oSpan2);
-	// 	oDiv.appendChild(oSpan3);
-	// 	oLi.appendChild(oStrong);
-	// 	oLi.appendChild(oDiv);
-	// 	oUl.appendChild(oLi);
-	// 	oDivMissionList.appendChild(oUl);
-	// 	oMain.appendChild(oDivMissionList);
-	// 	oMissionName.value = "";
-	// 	oCount.innerHTML = "1";
-	// }
+ 	/* 新增任务界面确定按钮点击事件 */
 }
 
 /**

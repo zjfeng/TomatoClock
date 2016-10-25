@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+        // var oBody = document.getElementsByTagName("body")[0];
+        var i = 0;
+        var a = false;
+        console.log("hello!");
+        function timer() {
+            console.log(2);
+            var timekeeper = setTimeout(function () {
+                timer();
+            }, 1000);
+        }
+        document.onclick = function () {
+            i ++;
+            if (i % 2 == 0) {
+                timer();
+            } else {
+                console.log(1);
+            }
+        }
+    </script>
+</body>
+</html>

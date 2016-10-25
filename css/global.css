@@ -91,8 +91,9 @@ a {
 }
 
 .nav-right {
-	left: 940px;
-	width: 204px;
+	/* left: 940px;
+	width: 204px; */
+	right: 90px;
 }
 
 .nav-right ul li {
@@ -103,14 +104,14 @@ a {
 
 /* 任务界面 */
 .panle {
-	height: 600px;
+	/* height: 600px; */
 	width: 100%;
 	position: relative;
 }
 
 #main {
 	width: 600px;
-	height: 600px;
+	/* height: 600px; */
 	margin: 0px auto;
 	text-align: center;
 	z-index: auto;
@@ -383,6 +384,10 @@ a {
 	color: #F4606C;
 }
 
+#missionList {
+	margin-bottom: 30px;
+}
+
 
 
 /* 任务界面结束 */
@@ -393,7 +398,7 @@ a {
 /* 设置界面 */
 #set {
 	width: 600px;
-    height: 600px;
+    /* height: 600px; */
     margin: 0px auto;
     position: relative;
 }
@@ -568,6 +573,10 @@ a {
 
 #set .menu-set #sound .button-default:hover {
 	background-color: #EBEBEB;
+}
+
+#sound .file {
+	cursor: pointer;
 }
 
 #set .menu-set #layout .menu-set-item {
