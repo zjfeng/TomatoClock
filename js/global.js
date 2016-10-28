@@ -147,7 +147,12 @@ window.onload = function () {
 					if (this.obj.offsetLeft >= 0) {
 						finishAutoRest = false;
 					} else {
-						finishAutoRest = true;
+						if (!manualOperation) {
+							finishAutoRest = true;
+						} else {
+							alert("不可与[手动模式]同时打开！");
+							startMove(oRadiosUls[this.index], {left : -50});
+						}
 					}
 					break;
 				case 2 :
@@ -182,7 +187,12 @@ window.onload = function () {
 					if (this.obj.offsetLeft >= 0) {
 						manualOperation = false;
 					} else {
-						manualOperation = true;
+						if (!finishAutoRest) {
+							manualOperation = true;
+						} else {
+							alert("不可与[点击完成时自动休息]同时打开！");
+							startMove(oRadiosUls[this.index], {left : -50});
+						}
 					}
 					break;
 			}
@@ -381,17 +391,35 @@ window.onload = function () {
 		this.endTime.setSeconds(restTime);
 		this.restLeftTime = parseInt((this.endTime.getTime() - this.beginTime.getTime()) / 1000);
 		this.finishCount = 0;
-		this.isWorking = true;
+		this.isWorking = true;  //任务工作或休息标志
 		this.oSpan1;
 		this.oSpan2;
 		this.oSpan3;
 		this.oSpan4;
 		this.oSpan5;
-		working = false;
+		working = false;  //计时状态标志
 		SetTime = function (obj) {
-	 		if (obj.isWorking) {
-				obj.workLeftTime--;
-				if (obj.workLeftTime < 0) {
+	 		if (obj.isWorking) {  //任务工作中
+	 			if (manualOperation && obj.restLeftTime < 0) {
+	 				obj.oSpan2.style.display = "none";
+	 				obj.oSpan3.style.display = "none";
+	 				obj.oSpan4.style.display = "none";
+	 				obj.oSpan6.style.display = "none";
+	 				obj.oSpan7.style.display = "inline-block";
+	 				obj.oSpan7.onclick = function () {
+	 					working = true;
+	 					obj.restLeftTime = obj.restTime;
+	 					obj.oSpan2.style.display = "inline-block";
+	 					obj.oSpan3.style.display = "inline-block";
+	 					obj.oSpan4.style.display = "none";
+	 					obj.oSpan6.style.display = "none";
+	 					obj.oSpan7.style.display = "none";
+	 					SetTime(obj);
+	 				}
+	 				return;
+	 			}
+				obj.workLeftTime--;  //工作剩余时间减一
+				if (obj.workLeftTime < 0) {  //工作剩余时间小于0，即工作结束
 		 			if (soundRemind) {
 		 				PlaySound(soundMission);
 		 			}
@@ -399,36 +427,54 @@ window.onload = function () {
 		 			obj.finishCount++;
 		 			obj.oSpan1.innerHTML = obj.finishCount + "/" + obj.count;
 		 			obj.restLeftTime = obj.restTime;
-		 			obj.isWorking = false;
+		 			obj.isWorking = false;  //任务工作结束，进入任务休息
+		 			if (manualOperation) {
+		 				working = false;
+		 			}
 		 			obj.oSpan2.style.display = "none";
 		 			obj.oSpan3.style.display = "none";
 		 			obj.oSpan4.style.display = "inline-block";
 	 			}
-	 		} else {
-	 			console.log(1);
-				obj.restLeftTime--;
-		 		if (obj.restLeftTime < 0) {
-		 			console.log(2);
+	 		} else {  //任务休息，this.isWorking == false;
+	 			if (manualOperation && !working) {  //如果设置了手动模式
+					clearTimeout(timekeeper);
+					obj.oSpan2.style.display = "none";
+					obj.oSpan3.style.display = "none";
+					obj.oSpan4.style.display = "none";
+					obj.oSpan6.style.display = "inline-block";
+					obj.oSpan6.onclick = function () {
+						working = true;
+						obj.oSpan2.style.display = "inline-block";
+						obj.oSpan3.style.display = "inline-block";
+						obj.oSpan6.style.display = "none";
+						SetTime(obj);
+					}
+					return;
+				}
+				obj.restLeftTime--;  //休息剩余时间减一
+		 		if (obj.restLeftTime < 0) {  //休息时间小于0，即休息结束
 		 			if (soundRemind) {
 		 				PlaySound(soundRest);
 		 			}
-			 		if (obj.finishCount == obj.count) {
-			 			console.log(3);
+			 		if (obj.finishCount == obj.count) {  //完成了指定任务次数
+			 			clearTimeout(timekeeper);
 			 			obj.oSpan2.style.display = "none";
 			 			obj.oSpan3.style.display = "none";
 			 			obj.oSpan4.style.display = "none";
 			 			obj.oSpan5.style.display = "inline-block";
 			 			oH1.innerHTML = "番茄计时器";
-			 			working = false;  //工作状态
+			 			working = false;  //计时器停止工作
 			 			return;
-			 		} else {
-			 			console.log(4);
+			 		} else {  //尚未完成指定的任务次数，转入下一次工作计时
 				 		clearTimeout(timekeeper);
-				 		obj.workLeftTime = obj.workTime;
+				 		obj.workLeftTime = obj.workTime;  //重置工作时间
 				 		obj.isWorking = true;  //任务工作中
 				 		obj.oSpan2.style.display = "inline-block";
 			 			obj.oSpan3.style.display = "inline-block";
 			 			obj.oSpan4.style.display = "none";
+			 			if (manualOperation) {
+			 				working = false;
+			 			}
 			 			this.oSpan2.getElementsByTagName("i")[0].innerHTML = "&#xe602;";  //完成按钮
 			 			this.oSpan2.nextSibling.getElementsByTagName("i")[0].innerHTML = "&#xe62e;";  //停止按钮
 			 			this.oSpan2.nextSibling.className = "span3";
@@ -436,10 +482,10 @@ window.onload = function () {
 		 		}
 	 		}
 	 		obj.ShowTime();
+		 	console.count();
 	 		timekeeper = setTimeout(function () {
 		 		SetTime(obj);
 		 	}, 1000);
-		 	console.count();
 	 	}
 	}
 
@@ -476,18 +522,26 @@ window.onload = function () {
 			oSpan3 = document.createElement("span");
 			var oSpan4 = document.createElement("span");
 			var oSpan5 = document.createElement("span");
+			var oSpan6 = document.createElement("span");
+			var oSpan7 = document.createElement("span");
 			this.oSpan1 = oSpan1;
 			this.oSpan2 = oSpan2;
 			this.oSpan3 = oSpan3;
 			this.oSpan4 = oSpan4;
 			this.oSpan5 = oSpan5;
+			this.oSpan6 = oSpan6;
+			this.oSpan7 = oSpan7;
 			var oStrong = document.createElement("strong");
 			var oSpan2A = document.createElement("a");
 			var oSpan3A = document.createElement("a");
+			var oSpan6A = document.createElement("a");
+			var oSpan7A = document.createElement("a");
 			var oSpan2I = document.createElement("i");
 			var oSpan3I = document.createElement("i");
 			var oSpan4I = document.createElement("i");
 			var oSpan5I = document.createElement("i");
+			var oSpan6I = document.createElement("i");
+			var oSpan7I = document.createElement("i");
 			var oDiv = document.createElement("div");
 			oSpan1.innerHTML = this.finishCount + "/" + this.count;
 			if (oMissionName.value) {
@@ -499,25 +553,37 @@ window.onload = function () {
 			oSpan3I.className = "iconfont";
 			oSpan4I.className = "iconfont";
 			oSpan5I.className = "iconfont";
+			oSpan6I.className = "iconfont";
+			oSpan7I.className = "iconfont";
 			oSpan2I.innerHTML = "&#xe609;";  //开始按钮
 			oSpan3I.innerHTML = "&#xe636;";  //删除按钮
 			oSpan4I.innerHTML = "&#xe64b; 休息一下!";  //时钟按钮
 			oSpan5I.innerHTML = "&#xe602; 任务完成!";  //完成按钮
+			oSpan6I.innerHTML = "&#xe64b; 休息一下!";  //时钟按钮
+			oSpan7I.innerHTML = "&#xe64b; 任务继续!";  //时钟按钮
 			oSpan1.className = "span1";
 			oSpan2.className = "span2";
 			oSpan4.className = "span4";
 			oSpan5.className = "span5";
+			oSpan6.className = "span6";
+			oSpan7.className = "span7";
 			oSpan2A.appendChild(oSpan2I);
 			oSpan3A.appendChild(oSpan3I);
+			oSpan6A.appendChild(oSpan6I);
+			oSpan7A.appendChild(oSpan7I);
 			oSpan2.appendChild(oSpan2A);
 			oSpan3.appendChild(oSpan3A);
 			oSpan4.appendChild(oSpan4I);
 			oSpan5.appendChild(oSpan5I);
+			oSpan6.appendChild(oSpan6A);
+			oSpan7.appendChild(oSpan7A);
 			oDiv.appendChild(oSpan1);
 			oDiv.appendChild(oSpan2);
 			oDiv.appendChild(oSpan3);
 			oDiv.appendChild(oSpan4);
 			oDiv.appendChild(oSpan5);
+			oDiv.appendChild(oSpan6);
+			oDiv.appendChild(oSpan7);
 			oLi.appendChild(oStrong);
 			oLi.appendChild(oDiv);
 			oUl.appendChild(oLi);
@@ -566,7 +632,7 @@ window.onload = function () {
 					this.nextSibling.getElementsByTagName("i")[0].innerHTML = "&#xe62e;";  //停止按钮
 					this.nextSibling.className = "span3";
 					working = true;  //设置为工作状态
-				} else {  //如果正在工作状态，即按钮显示为完成按钮
+				} else {  //如果正在工作状态，即按钮显示为完成按钮，点击了完成按钮
 					console.log("tick is onclick!!!");
 					clearTimeout(timekeeper);
 					if (that.finishCount < that.count) {  //如果未完成指定任务次数
@@ -577,10 +643,10 @@ window.onload = function () {
 						this.nextSibling.className = "";
 						that.workLeftTime = that.workTime;
 						that.restLeftTime = that.restTime;
-						if (finishAutoRest) {
+						if (finishAutoRest) {  //如果设置了点击完成自动休息功能
 							that.workLeftTime = -1;
 							SetTime(that);
-						} else {
+						} else {  //否则
 							that.finishCount ++;
 							that.oSpan1.innerHTML = that.finishCount + "/" + that.count;
 							if (that.finishCount == that.count) {
