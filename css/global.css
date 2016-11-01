@@ -1,7 +1,7 @@
 * {
 	padding: 0px;
 	margin: 0px;
-	font-family: "幼圆";
+	font-family: "幼圆", sans-serif;
 	
 	/* 禁止文本选中 */
 	-moz-user-select:none;/* 火狐 */

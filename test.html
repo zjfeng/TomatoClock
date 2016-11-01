@@ -6,24 +6,14 @@
 </head>
 <body>
 	<script type="text/javascript">
-        // var oBody = document.getElementsByTagName("body")[0];
-        var i = 0;
-        var a = false;
-        console.log("hello!");
-        function timer() {
-            console.log(2);
-            var timekeeper = setTimeout(function () {
-                timer();
-            }, 1000);
+        function S4() {
+           return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
         }
-        document.onclick = function () {
-            i ++;
-            if (i % 2 == 0) {
-                timer();
-            } else {
-                console.log(1);
-            }
+        function guid() {
+           return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
         }
+        var myID = "static" + guid();
+        console.log(myID);
     </script>
 </body>
 </html>
